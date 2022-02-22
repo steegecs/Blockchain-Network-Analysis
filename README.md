@@ -10,8 +10,8 @@
   - Money_Trace_Adk.pkl
   - Set.pkl
   - Edge_List.csv 
-  - New_Ancestor_Accounts
-  - New_Active_Accounts
+  - New_Ancestor_Accounts.csv
+  - New_Active_Accounts.csv
 
 - The next program is the _Account_Networks.py_ program. This generates images of the network of input accounts and ancestral connections. It allows you to view the connections at varying levels of depth. It creates charts up to the 3rd level of depth in the graphs, because beyond that it usually becomes incomprehensible. 
 
