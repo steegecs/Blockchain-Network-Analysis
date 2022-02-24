@@ -6,25 +6,25 @@ from tqdm import tqdm
 from copy import deepcopy
 
 
-def Expand_Graph(API_key, Gitcoin_Donation, Receiving_Addresses, Very_Active_Account, Money_Trace_Adj, Edge_List, Window, Depth, Large_Wallet, i):
-    # Gitcoin_Transaction - Gitcoin Transaction that was recorded on the blockchain
+def Expand_Graph(API_key, Transaction, Receiving_Addresses, Very_Active_Account, Money_Trace_Adj, Edge_List, Window, Depth, Large_Wallet, i):
+    # Transaction - Transaction that was recorded on the blockchain
     # Very_Active_Account - Wallets that were extremely active - Had a high summative in/out degree
     # All_Data            - All blockchain data associated with transactions stored in the Adjacency list
     # AdjList             - Adjacency list to store accounts and transactions as nodes and edges in a directed graph
     # Key: 'to' Ethereum Address
     # Value: 'from' Ethereum Address, a hash of 'hash'+'from'+'to'. (Transaction Hash, 'from', and 'to' Ethereum Addresses)
 
-    # Cur_Adj = {} #Stores the adjacency list that stems from a Gitcoin contribution
-    Gitcoin_Donation_dict = Gitcoin_Donation.to_dict()
+    # Cur_Adj = {} #Stores the adjacency list that stems from a Sender of a Transaction
+    Transaction_dict = Transaction.to_dict()
     Cur_Money_Trace_Adj = {}
     Cur_Edge_List = pd.DataFrame()
 
     Hash = set()  # Stores all custom unique transaction hashed
 
-    Gitcoin_Donation_dict['depth'] = 0 #Keep track of the depth in the adjacency list
-    Queue = [Gitcoin_Donation_dict] #Breadth First Search Queue for searching transactions lineable to Gitcoin Transactions
-    Hash.add(Gitcoin_Donation['hash_from_to'])
-    Start_block = int(Gitcoin_Donation['blockNumber']) - Window  # Start block so that we only pull blocks withing a specific range for the whole search
+    Transaction_dict['depth'] = 0 #Keep track of the depth in the adjacency list
+    Queue = [Transaction_dict] #Breadth First Search Queue for searching transactions lineable to initial sender
+    Hash.add(Transaction['hash_from_to'])
+    Start_block = int(Transaction['blockNumber']) - Window  # Start block so that we only pull blocks withing a specific range for the whole search
 
     while len(Queue) > 0:
 
@@ -55,7 +55,7 @@ def Expand_Graph(API_key, Gitcoin_Donation, Receiving_Addresses, Very_Active_Acc
             for result in data:
                 result['hash_from_to'] = hash(result['hash'] + result['from'] + result['to'])  # create hash for storage and reference
                 result['depth'] = current['depth'] + 1
-                result['Contributor'] = Gitcoin_Donation['from']
+                result['Contributor'] = Transaction['from']
                 result['Contrib_Number'] = i
 
                 if result['to'] not in Receiving_Addresses and result['hash_from_to'] not in Hash:
@@ -95,14 +95,14 @@ def Expand_Graph(API_key, Gitcoin_Donation, Receiving_Addresses, Very_Active_Acc
 
 
 def Get_Sets(AdjList, Transactions, Sets):
-    # AdjList       :This is a list of adjacency lists. One for each gitcoin contribution
+    # AdjList       :This is a list of adjacency lists. One for each initial Transaction
     # Transactions  :Pass the original transactions used to create graphs
     # Sets          :Each set withing each depth of the graphs indicate all new or updated connections
     # that contribution accounts have to ancestor accounts
 
     #Get the list of addresses used to generate graphs
-    Gitcoin_Donors = []
-    [Gitcoin_Donors.append(Transactions.iloc[i]['from']) for i in range(len(Transactions))]
+    Accounts = []
+    [Accounts.append(Transactions.iloc[i]['from']) for i in range(len(Transactions))]
 
     # This is used to indicate that a new set has been
     # made at an address or updated from the previous depth
@@ -110,7 +110,7 @@ def Get_Sets(AdjList, Transactions, Sets):
     pageRank = {}
     # Dictionary of Dictionaries
     # key:    Ancestor nodes of contributing accounts
-    # value/key:  All Gitcoin contribution accounts that may have received money from this account
+    # value/key:  All initial accounts that may have received money from this account
     # value: list of lists - [[Transaction value, Currency]]
 
     items = True  # This is used as an indicator to indicate that there is more to search
@@ -118,7 +118,7 @@ def Get_Sets(AdjList, Transactions, Sets):
     Depth = 1  # This keeps track of the depth in the graphs that is being searched
 
     Addresses = []  # Keep track of the donor the money is flowing to
-    [Addresses.append([Gitcoin_Donors[i]]) for i in range(len(Gitcoin_Donors))]
+    [Addresses.append([Accounts[i]]) for i in range(len(Accounts))]
 
     while items == True:
         items = False
@@ -184,7 +184,7 @@ def Get_Sets(AdjList, Transactions, Sets):
 Sets: Data Structure
 [Depth]
     [Ancestor]
-        [Gitcoin Contritor(s)]
+        [Initial Accounts]
             [[[Transaction Amount, Currency, Receiver, Block Number, transaction hash (Ancestor -> Receiver)],...,...]]
 '''
 
@@ -222,7 +222,7 @@ def Create_Set_Feats(Sets):
 
     #Sets[Depth]
         [Ancestor]
-            [Gitcoin Contributor(s)]
+            [Initial Accounts]
                 [[[Transaction Amount, Currency, Receiver, Block Number, transaction hash (Ancestor -> Receiver)],...,...], {Currency: [Total Amount, Count]}]
     '''
 
@@ -367,7 +367,7 @@ def Store_Active_Accounts(Very_Active_Account, w3, Byte_Code_Hash, root):
     New_Active_Accounts = DF_Wallets_left_only.append(DF_Contracts_left_only).sort_values(by=['Byte_Code', 'Count'], ascending=False)
     New_Active_Accounts.to_csv(root + 'outputs/New_Active_Accounts.csv')
 
-def Store_Ancestor_Accounts(Very_Active_Account, w3, Byte_Code_Hash, root, Sets): 
+def Store_Ancestor_Accounts(Sets, w3, Byte_Code_Hash, root): 
     #The purpose of this section of code is to process the ancestors recorded when creating sets.
     #We want to audit at least some of the previously unseen accounts to determine their nature.
     Ancestor_Contracts_List = []

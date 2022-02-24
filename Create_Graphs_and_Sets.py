@@ -4,15 +4,9 @@ import sys
 from tqdm import tqdm
 import pickle
 from web3 import Web3
+
 from Utils import Expand_Graph, Get_Sets, Store_Active_Accounts, Store_Ancestor_Accounts
-
-#Input root, API_keu, and infura url
-root = "C:/Users/15138/Documents/Github Programs/"
-csv_file = "/tokenomics/Gitcoin_Donations_R7.csv"
-
-API_key = '4RHGY82N5PA5E2HW4AAP2CNV6B24RXGNNN'
-infura_url = "https://mainnet.infura.io/v3/fcff21af8f48490993576d56a6a57453"
-
+from config import root, csv_file, API_key, infura_url
 
 #Recommended starting values.
 Window = 5000
@@ -65,7 +59,7 @@ print('')
 print('Storing Active and Ancestor Nodes:')
 Byte_Code_Hash = {}
 Store_Active_Accounts(Very_Active_Account, w3, Byte_Code_Hash, root)
-Store_Ancestor_Accounts(Very_Active_Account, w3, Byte_Code_Hash, root, Sets)
+Store_Ancestor_Accounts(Sets, w3, Byte_Code_Hash, root)
 print('Complete')
 print('')
 

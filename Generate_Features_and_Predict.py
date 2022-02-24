@@ -5,12 +5,9 @@ from tqdm import tqdm
 import pickle
 from datetime import datetime
 from web3 import Web3
+
 from Utils import Extract_Most_Suspicious_Bursts, Generate_Burst_Features, Additional_Features_and_Clean
-
-#Input root, API_keu, and infura url
-root = "C:/Users/15138/Documents/Github Programs/"
-
-API_key = '4RHGY82N5PA5E2HW4AAP2CNV6B24RXGNNN'
+from config import root, API_key
 
 #Load in blockchain transactions
 Edge_List = pd.read_csv(root + 'outputs/Edge_List.csv').reset_index()

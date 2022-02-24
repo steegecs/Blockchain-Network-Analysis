@@ -3,17 +3,17 @@ import pickle
 import matplotlib.pyplot as plt
 import networkx as nx
 
-root = "C:/Users/15138/Documents/Github Programs/"
+from config import root
 
 image_dest = root + "networks/images/"
 adj_dest = root + "networks/adjacencies/"
 
-Transactions = pd.read_csv(root + "raw_data/tokenomics/Gitcoin_Donations_R7.csv").reset_index()
+Transactions = pd.read_csv(root + "raw_data" + csv_file).reset_index()
 with open(root + 'raw_data/Sets.pkl', 'rb') as file:
     Sets = pickle.load(file)
 
-Gitcoin_Donors = []
-[Gitcoin_Donors.append(Transactions.iloc[i]['from']) for i in range(len(Transactions))]
+Accounts = []
+[Accounts.append(Transactions.iloc[i]['from']) for i in range(len(Transactions))]
 
 
 Known_Large_Nodes = pd.read_csv(root + "outputs\Known_Nodes.csv")
@@ -23,7 +23,7 @@ for i in range(len(Known_Large_Nodes)):
     Known_Nodes[Known_Large_Nodes.iloc[i]['Addresses']] = Known_Large_Nodes.iloc[i]['Wallet Name']
 
 
-def get_transaction_graph(Gitcoin_Donors, Sets, Known_Nodes) -> nx.Graph:
+def get_transaction_graph(Accounts, Sets, Known_Nodes) -> nx.Graph:
     Depth = 1
 
     # Iterating through depths to create a chart for each depth level
@@ -40,7 +40,7 @@ def get_transaction_graph(Gitcoin_Donors, Sets, Known_Nodes) -> nx.Graph:
         '''
 
         # Start by appending Gitcoin Donors
-        for addr in Gitcoin_Donors:
+        for addr in Accounts:
             if addr not in G:
                 G.add_node(addr)
                 color_map.append("purple")
@@ -96,4 +96,4 @@ def get_transaction_graph(Gitcoin_Donors, Sets, Known_Nodes) -> nx.Graph:
 
         Depth = Depth + 1
 
-get_transaction_graph(Gitcoin_Donors, Sets, Known_Nodes)
+get_transaction_graph(Accounts, Sets, Known_Nodes)
