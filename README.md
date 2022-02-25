@@ -26,22 +26,20 @@
 - The 3rd program, _Generate_Features_and_Predict.py_, generates features for a rule based classifier. The specific features and methodology are outlined in the dataset documentation. The output will be a list of accounts with a suspicion level between 1 and 4. There may be multiple outputs for each account, because there can be multiple instances that warrant suspicion when looking into the account's history. 
 
 ## How to use
-1. Run the _Create_Graphs_and_Sets.py_ program. In order to run this program, it requires you to initiallize the following variables:
+0. Fill in parameters in the _config.py_ file: 
   - **root** - Give the root path to where you want to store your files 
   - **csv_file** - The input accounts with the from, to, and blockNumber attributes per row
   - **API_key** - This needs to be an Etherscan API key
   - **infura_url** - This is a url for access to the infura node
+  
+1. Run the _Create_Graphs_and_Sets.py_ program. In order to run this program, it requires you to initiallize the following variables:
   - **Window** - This indicates how many blocks back in the history of an account you want to investigate. 5000 is the recommneded starting value. The length of time it takes to terminate exponentially the further back you go.
   - **Depth** - This indicates the maximum depth of the graphs you create. It is not recommended to go beyond 3 for the purposes of the classifier.
   - **Large_wallet** - This indicates how many transactions it takes upon a query to label the queried account a large wallet. This is done, because if you did not exclude these highly active accounts the length of time to terminate would increase a lot. The accounts linked to an active account are not further queried and the graph does not branch further from this instance. 50 is the recommended starting value, because increasing it again causes the program to take much longer to terminate. 
 
-2. Run the _Generate_Features_and_Predict.py_ program. In order to run this, you have to initialize two variables from the previous program:
-  - **root** - Give the root path to where you want to store your files 
-  - **API_key** - This needs to be an Etherscan API key
+2. Run the _Generate_Features_and_Predict.py_ program. 
  
-3. (Optional) Run the _Account_Networks.py_ to visualize the ancestral network for your input data as shown in the image above. Before running the program, you should create the file paths: 
-  - **root**\networks\images\pngs
-  - **root**\networks\adjacencies\pngs
+3. (Optional) Run the _Account_Networks.py_ to visualize the ancestral network for your input data as shown in the image above.
 
 ## Output Data
 
@@ -83,10 +81,16 @@ Each row in the Edge List is an edge in one of the graphs generated from an inpu
           [Gitcoin Contritor(s)] -> Input accounts that descend from the ancestor
             [[[Transaction Amount, Currency, Receiver, Block Number, transaction hash (Ancestor -> Receiver)],...,...]] -> Transaction info that made the ancestor
 
-
-
 -	Sets is a dictionary where the key values are the depth level. Within each depth, there is a set of ancestors that became ancestors at this specific level of depth. These ancestors will not repeat in subsequent levels of depth unless it becomes an ancestor of a greater number of contributors from the prior level to the next. 
 
+**New_Active_Accounts**
+-  This is is a file that contains all of the active accounts that were encountered in the exectution of the create_graphs.py program. Currently it just contains the address of the account and the most active recording of the address by count of transacitons. I'll update this sometimes soon to be a better metric. 
+
+**New_Ancestor_Accounts**
+- This is a file that contains a list of all ancestor accounts. Each account can be recorded up to once for each level of depth and only appears again in the next level of depth if it is an ancestor to additional contributors
+
+**Known_Nodes**
+- This is a file used to keep track accounts. The _create_graphs.py_ file will store new ancestor accounts and highly active accounts in the Known_Nodes.csv file if it is a contract and has the same byte code as a contract in the Known_Nodes file. 
 
 
 
