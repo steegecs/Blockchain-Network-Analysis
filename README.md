@@ -83,6 +83,16 @@ Each row in the Edge List is an edge in one of the graphs generated from an inpu
 
 -	Sets is a dictionary where the key values are the depth level. Within each depth, there is a set of ancestors that became ancestors at this specific level of depth. These ancestors will not repeat in subsequent levels of depth unless it becomes an ancestor of a greater number of contributors from the prior level to the next. 
 
+**Suspicous_Transactions**
+-  Transactions from the Edge_List_w_Bursts.csv file are labeled as suspicious using a rule based classifier as follows:
+    - ['Suspicion_Level'] = 2 - ['depth'] if ['XXXX_Out_Child'] > 1 & 'XXXX_Out_Child_Prop'] > 0.2
+    - ['Suspicion_Level'] = 3 - ['depth'] if ['XXXX_Out_Child'] > 1 & 'XXXX_Out_Child_Prop'] > 0.4
+    - ['Suspicion_Level'] = 4 - ['depth'] if ['XXXX_Out_Child'] > 1 & 'XXXX_Out_Child_Prop'] > 0.6
+    - ['Suspicion_Level'] = 5 - ['depth'] if ['XXXX_Out_Child'] > 2 & 'XXXX_Out_Child_Prop'] > 0.8
+ 
+**Suspicous_Transactions**
+-  This labels accounts with the most suspicious transaction from the Suspicious_Transactions.csv
+
 **New_Active_Accounts**
 -  This is is a file that contains all of the active accounts that were encountered in the exectution of the create_graphs.py program. Currently it just contains the address of the account and the most active recording of the address by count of transacitons. I'll update this sometimes soon to be a better metric. 
 
