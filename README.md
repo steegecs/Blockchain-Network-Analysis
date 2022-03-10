@@ -4,7 +4,7 @@
 - The Block Analysis Tool is a tool used to detect sybil behavior on the blockchain. The tool is comprised of 3 programs. The first is the _Create_Graphs_and_Sets.py_ program. This takes as input a .csv file that has at least the following 3 attributes for each input:  
   - **from** - The sending address for a specific transaction
   - **to** - The receiving address for a specific transaction
-  - **blockNumber** - The block number for which you want to start the investigation of the **from** account's prior history. 
+  - **blockNumber** - The block number for which you want to start the investigation of the **from** account's ancestral history. 
   
 - The outputs to this program are 3 as well (_See Dataset Documentation for more details_):
   - Money_Trace_Adk.pkl
